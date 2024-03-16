@@ -1,9 +1,11 @@
 export CUDA_VISIBLE_DEVICES=0
 RootDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
+echo -e "Root Dir: $RootDir"
+
 Dataset=examples
 
-BasePath=/mnt/nfs-storage/data                    # change dir here
+BasePath=TEMP                 # change dir here
 DataPath=$RootDir/../$Dataset
 
 ModelCate=AMRBART-large
@@ -19,12 +21,12 @@ OutputDir=${RootDir}/outputs/Infer-$Dataset-${ModelCate}-AMRParing-bsz16-lr-${lr
 if [ ! -d ${OutputDir} ];then
   mkdir -p ${OutputDir}
 else
-  read -p "${OutputDir} already exists, delete origin one [y/n]?" yn
-  case $yn in
-    [Yy]* ) rm -rf ${OutputDir}; mkdir -p ${OutputDir};;
-    [Nn]* ) echo "exiting..."; exit;;
-    * ) echo "Please answer yes or no.";;
-  esac
+#  read -p "${OutputDir} already exists, delete origin one [y/n]?" yn
+#  case $yn in
+  rm -rf ${OutputDir}; mkdir -p ${OutputDir};
+#    [Nn]* ) echo "exiting..."; exit;;
+#    * ) echo "Please answer yes or no.";;
+#  esac
 fi
 
 export HF_DATASETS_CACHE=$DataCache
@@ -37,7 +39,7 @@ fi
 python -u main.py \
     --data_dir $DataPath \
     --task "text2amr" \
-    --test_file $DataPath/data4parsing.jsonl \
+    --test_file $DataPath/amrs.jsonl \
     --output_dir $OutputDir \
     --cache_dir $ModelCache \
     --data_cache_dir $DataCache \
